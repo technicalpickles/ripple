@@ -54,7 +54,12 @@ module Riak
 
           if headers["content-type"] =~ /multipart\/mixed/
             boundary = extract_boundary(headers.to_hash["content-type"].first)
-            parse(body, boundary)
+            if boundary
+              parse(body, boundary)
+            else
+              warn "multipart content-type without boundary"
+              {:headers => headers.to_hash, :body => body}
+            end
           else
             {:headers => headers.to_hash, :body => body}
           end
